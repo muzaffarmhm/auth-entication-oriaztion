@@ -4,6 +4,14 @@ const mongoose = require("mongoose")
 const bcrypt = require("bcrypt")
 const session = require('express-session')
 const path = require('path')
+const User = require('./models/users')
+
+mongoose.connect('mongodb://localhost:27017/auth')
+.then(()=> console.log('Mongo DB connected successfully..')
+.catch((err)=>console.log(err));
+
+
+
 
 //Middleware
 
