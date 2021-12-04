@@ -48,3 +48,21 @@ app.post('/register',(req,res)=>{
     })
     res.send('Login Page')
 })
+
+app.get('/login',(req,res)=>{
+    res.render('login')
+})
+
+app.post('/login',async(req,res)=>{
+    const {email, password} = req.body
+    const a = await User.findOne({email})
+    bcrypt.compare(password,a.password)
+    .then(function(result){
+        if(result){
+            req.session.user_id = a._id
+        }
+    })
+    .catch(
+        res.redirect('/login')
+    )
+})
