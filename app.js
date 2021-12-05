@@ -22,6 +22,12 @@ app.use(session({
     saveUninitialized: true
 }))
 
+const requireLogin = (req,res,next)=>{
+    if(!req.session.user_id){
+        return res.redirect('/login')
+    }
+    next();
+}
 
 app.listen(3000,()=>{
     console.log('Listening at 3000');
@@ -55,14 +61,22 @@ app.get('/login',(req,res)=>{
 
 app.post('/login',async(req,res)=>{
     const {email, password} = req.body
-    const a = await User.findOne({email})
-    bcrypt.compare(password,a.password)
-    .then(function(result){
-        if(result){
-            req.session.user_id = a._id
-        }
-    })
-    .catch(
-        res.redirect('/login')
-    )
+    const user = await User.findOne({email})
+   const validpassword =  bcrypt.compare(password,user.password)
+   if(validpassword){
+       req.session.user_id = user._id
+       res.redirect('/secret')
+   }else{
+       res.send('Try again. Invalid username or password')
+   }
+    
+})
+
+app.get('/secret',requireLogin,(req,res)=>{ 
+    res.render('secret')
+})
+
+app.post('/logout',(req,res)=>{
+    req.session.user_id = null;
+    res.redirect('/')
 })
